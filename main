@@ -1,0 +1,25 @@
+import requests
+import json
+import folium
+
+# Вводим название искомого объекта:
+geo = 'Самара'      
+url = "https://geocode-maps.yandex.ru/1.x?"
+headers = {'apikey': '3f355b88-81e9-4bbf-a0a4-eb687fdea256',
+           'geocode': geo,
+           'format': 'json',
+           'results': '1'}
+           
+response = requests.get(url,headers )
+if response.ok:                                 # Проверяем успешно ли выполнен запрос
+    print ("ok")
+response = (response.json())                    # Переводим ответ в json для дальнейшей обработки
+
+#Извлекаем из ответа широту (b) и долготу (l) искомого объекта:
+b=(response['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['Point']['pos'].split(" ")[0])
+l=(response['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['Point']['pos'].split(" ")[1])
+
+# сохраняем html с искомым объектом нанесенным на карту просто потому что можем:
+area = folium.Map(location=[b,l])
+area.save(f'{b}_{l}.html')
+print('Широта:',b, 'Долгота:',l)
